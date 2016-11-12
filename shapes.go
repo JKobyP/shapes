@@ -6,7 +6,7 @@ const (
 )
 
 type Shape interface {
-	Location() Point
+	Element
 	Area() int
 }
 
@@ -17,7 +17,7 @@ type Element interface {
 // A Window represents a visible portion of the screen.
 type Window struct {
 	Area     *Rectangle
-	Elements []Shape
+	Elements []Element
 }
 
 // AddElement adds a new element to the Window
@@ -48,7 +48,7 @@ type Rectangle struct {
 
 // Includes returns true if p is located within r
 func (r *Rectangle) Includes(p Point) bool {
-	return p.X < r.Height-r.Location().x && p.X > 0 && p.Y < r.Width-r.Location().y && p.Y > 0
+	return p.X < r.Height-r.Location().X && p.X > 0 && p.Y < r.Width-r.Location().Y && p.Y > 0
 }
 
 func (r Rectangle) Location() Point {
@@ -59,13 +59,13 @@ func (r Rectangle) Area() int {
 	return r.Height * r.Width
 }
 
-// A Circle is a circle within an origin point at its center.
+// A Circle is a circle with an origin point at its center.
 type Circle struct {
 	origin Point
 	Radius int
 }
 
-func (c *Circle) Diameter() {
+func (c *Circle) Diameter() int {
 	return c.Radius * 2
 }
 
@@ -79,13 +79,13 @@ func (c Circle) Location() Point {
 }
 
 func (c Circle) Area() int {
-	const pi = 3.141592653589793238
-	return pi * Radius * Radius
+	const pi float64 = 3.141592653589793238
+	return int(pi * float64(c.Radius*c.Radius))
 }
 
 func InitWindow(width, height int) *Window {
 	var origin Point = Point{0, 0}
 	rectangle := &Rectangle{origin, width, height}
-	shapeSlice := make([]Shape, 0)
+	shapeSlice := make([]Element, 0)
 	return &Window{rectangle, shapeSlice}
 }
