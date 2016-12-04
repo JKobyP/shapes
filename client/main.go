@@ -1,12 +1,11 @@
 package main
 
 import (
+	"dynagrok/examples/shapes"
 	"fmt"
-	"github.com/jkobyp/shapes"
 	"io/ioutil"
 	"os"
 	"strconv"
-	"time"
 )
 
 type config struct {
@@ -23,28 +22,20 @@ func main() {
 	outfile := readArgs(&conf, os.Args)
 	w := shapes.InitWindow(conf.height, conf.width)
 
-	// Initialize a Window
-	sdlWindow := shapes.NewSdlWindow(w)
-
 	for i := 0; i < conf.numElements; i++ {
 		w.AddElement(shapes.Circle{*conf.locations[i], 10})
 	}
 
-	shapes.Update(sdlWindow, w)
+	oob := false
+
 	// Main loop: slides points accross the screen
-	for j := 0; j < conf.iterations; j++ {
-		shapes.Update(sdlWindow, w)
+	for j := 0; j < conf.iterations && !oob; j++ {
 		for i := 0; i < len(w.Elements); i++ {
-			time.Sleep(100 * time.Millisecond)
-			fmt.Println(i, " of ", len(w.Elements), ": ", w.Elements)
 			c := w.Elements[i].(shapes.Circle)
 			c.Move(*conf.direction[i])
-			fmt.Println(c)
 			w.Elements[i] = c
-			fmt.Println(w.Elements)
-			fmt.Println()
 			if !w.Area.Includes(w.Elements[i].Location()) {
-				fmt.Printf("%v is not in area %v, so is breaking.\n", w.Elements[i].Location(), w.Area)
+				oob = true
 				break
 			}
 		}
